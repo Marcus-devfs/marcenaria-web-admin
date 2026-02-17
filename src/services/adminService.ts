@@ -47,7 +47,29 @@ export const adminService = {
         });
         return response.data.data;
     },
+
+    getServices: async (page = 1, limit = 10, status = '', category = ''): Promise<{ services: Service[]; pagination: Pagination }> => {
+        const response = await api.get('/admin/services', {
+            params: { page, limit, status, category }
+        });
+        return response.data.data;
+    },
 };
+
+export interface Service {
+    _id: string;
+    title: string;
+    description: string;
+    category: string;
+    status: 'pending' | 'accepted' | 'in_progress' | 'completed' | 'cancelled';
+    clientId: User;
+    professionalId?: User;
+    budget: {
+        min?: number;
+        max?: number;
+    };
+    createdAt: string;
+}
 
 export interface User {
     _id: string;
