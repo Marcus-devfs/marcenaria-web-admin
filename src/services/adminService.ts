@@ -33,4 +33,37 @@ export const adminService = {
         const response = await api.get('/admin/dashboard');
         return response.data.data;
     },
+
+    getClients: async (page = 1, limit = 10, search = ''): Promise<{ users: User[]; pagination: Pagination }> => {
+        const response = await api.get('/users', {
+            params: { page, limit, role: 'client', search }
+        });
+        return response.data.data;
+    },
+
+    getProfessionals: async (page = 1, limit = 10, search = ''): Promise<{ users: User[]; pagination: Pagination }> => {
+        const response = await api.get('/users', {
+            params: { page, limit, role: 'professional', search }
+        });
+        return response.data.data;
+    },
 };
+
+export interface User {
+    _id: string;
+    name: string;
+    email: string;
+    phone?: string;
+    role: 'client' | 'professional' | 'admin';
+    isVerified: boolean;
+    isActive: boolean;
+    createdAt: string;
+    avatar?: string;
+}
+
+export interface Pagination {
+    page: number;
+    limit: number;
+    total: number;
+    pages: number;
+}

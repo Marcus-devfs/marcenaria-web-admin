@@ -3,6 +3,7 @@ import { usePathname } from 'next/navigation';
 import {
     LayoutDashboard,
     Users,
+    User as UserIcon,
     Package,
     CreditCard,
     FileText,
@@ -13,7 +14,8 @@ import clsx from 'clsx';
 
 const navItems = [
     { name: 'Dashboard', href: '/', icon: LayoutDashboard },
-    { name: 'Usuários', href: '/users', icon: Users },
+    { name: 'Clientes', href: '/client', icon: Users },
+    { name: 'Profissionais', href: '/professional', icon: UserIcon },
     { name: 'Serviços', href: '/services', icon: Package },
     { name: 'Pagamentos', href: '/payments', icon: CreditCard },
     { name: 'Orçamentos', href: '/quotes', icon: FileText },
