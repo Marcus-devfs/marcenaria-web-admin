@@ -60,6 +60,12 @@ export const adminService = {
         });
         return response.data.data;
     },
+    getPayments: async (page = 1, limit = 10, status = ''): Promise<{ transactions: Transaction[]; pagination: Pagination }> => {
+        const response = await api.get('/admin/transactions', {
+            params: { page, limit, status }
+        });
+        return response.data.data;
+    },
 };
 
 export interface Service {
@@ -112,4 +118,17 @@ export interface Quote {
         title: string;
         category: string;
     };
+}
+
+export interface Transaction {
+    _id: string;
+    quoteId: string | Quote;
+    amount: number;
+    platformFee: number;
+    netAmount: number;
+    status: 'pending' | 'completed' | 'failed' | 'refunded';
+    paymentMethod: string;
+    clientId: User;
+    professionalId: User;
+    createdAt: string;
 }
