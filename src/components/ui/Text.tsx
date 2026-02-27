@@ -8,7 +8,7 @@ export function cn(...inputs: ClassValue[]) {
 
 interface TextProps extends React.HTMLAttributes<HTMLParagraphElement> {
     as?: 'p' | 'span' | 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6' | 'div';
-    variant?: 'h1' | 'h2' | 'h3' | 'h4' | 'body' | 'small' | 'muted';
+    variant?: 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'body' | 'small' | 'muted';
     className?: string;
     children: React.ReactNode;
 }
@@ -25,6 +25,7 @@ export const Text: React.FC<TextProps> = ({
         h2: 'text-3xl font-bold tracking-tight text-gray-900',
         h3: 'text-2xl font-semibold tracking-tight text-gray-900',
         h4: 'text-xl font-semibold tracking-tight text-gray-900',
+        h5: 'text-lg font-semibold tracking-tight text-gray-900',
         body: 'text-base leading-7 text-gray-700',
         small: 'text-sm font-medium leading-none text-gray-900',
         muted: 'text-sm text-gray-500',

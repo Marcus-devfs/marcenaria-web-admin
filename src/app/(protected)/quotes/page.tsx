@@ -5,6 +5,7 @@ import { adminService, Quote, Pagination } from '@/services/adminService';
 import { Text } from '@/components/ui/Text';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
+import { Select } from '@/components/ui/Select';
 import { Filter } from 'lucide-react';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
@@ -71,9 +72,8 @@ export default function QuotesPage() {
 
             <Card className="bg-white border border-gray-100 shadow-sm overflow-hidden">
                 <div className="p-4 border-b border-gray-100 bg-gray-50/50 flex flex-wrap gap-4">
-                    <div className="relative">
-                        <select
-                            className="pl-3 pr-8 py-2 rounded-lg border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 appearance-none bg-white"
+                    <div className="w-48">
+                        <Select
                             value={status}
                             onChange={(e) => { setStatus(e.target.value); setPage(1); }}
                         >
@@ -82,8 +82,7 @@ export default function QuotesPage() {
                             <option value="accepted">Aceito</option>
                             <option value="rejected">Rejeitado</option>
                             <option value="expired">Expirado</option>
-                        </select>
-                        <Filter className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
+                        </Select>
                     </div>
                 </div>
 

@@ -33,8 +33,41 @@ export default function Dashboard() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-full bg-primary-50">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600"></div>
+      <div className="space-y-6 bg-gray-50 p-6 min-h-full animate-pulse">
+        <div className="h-8 bg-gray-200 rounded w-48 mb-6"></div>
+
+        {/* Overview Cards Skeleton */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          {[...Array(4)].map((_, i) => (
+            <div key={i} className="bg-white border border-gray-100 shadow-sm rounded-xl p-4 h-[104px]">
+              <div className="flex items-center h-full">
+                <div className="h-12 w-12 bg-gray-200 rounded-full"></div>
+                <div className="ml-4 flex-1 space-y-2">
+                  <div className="h-3 bg-gray-200 rounded w-24"></div>
+                  <div className="h-5 bg-gray-200 rounded w-16"></div>
+                  <div className="h-2 bg-gray-200 rounded w-20"></div>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Detailed Sections Skeleton */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {[...Array(2)].map((_, i) => (
+            <div key={i} className="bg-white border border-gray-100 shadow-sm rounded-xl p-6 h-[252px]">
+              <div className="h-5 bg-gray-200 rounded w-1/3 mb-6"></div>
+              <div className="space-y-4">
+                {[...Array(4)].map((_, j) => (
+                  <div key={j} className="flex justify-between items-center border-b border-gray-50 pb-2">
+                    <div className="h-4 bg-gray-200 rounded w-24"></div>
+                    <div className="h-4 bg-gray-200 rounded w-8"></div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
     );
   }

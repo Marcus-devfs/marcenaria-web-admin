@@ -5,6 +5,7 @@ import { adminService, User, Pagination } from '@/services/adminService';
 import { Text } from '@/components/ui/Text';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
+import { Input } from '@/components/ui/Input';
 import { Search, User as UserIcon, CheckCircle, XCircle } from 'lucide-react';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
@@ -51,12 +52,11 @@ export default function ClientsPage() {
 
             <Card className="bg-white border border-gray-100 shadow-sm overflow-hidden">
                 <div className="p-4 border-b border-gray-100 bg-gray-50/50">
-                    <form onSubmit={handleSearch} className="relative max-w-md">
-                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
-                        <input
+                    <form onSubmit={handleSearch} className="max-w-md">
+                        <Input
                             type="text"
                             placeholder="Buscar por nome ou email..."
-                            className="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500"
+                            leftElement={<Search className="h-4 w-4 text-gray-400" />}
                             value={search}
                             onChange={(e) => setSearch(e.target.value)}
                         />
