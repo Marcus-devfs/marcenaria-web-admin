@@ -54,6 +54,12 @@ export const adminService = {
         });
         return response.data.data;
     },
+    getQuotes: async (page = 1, limit = 10, status = ''): Promise<{ quotes: Quote[]; pagination: Pagination }> => {
+        const response = await api.get('/admin/quotes', {
+            params: { page, limit, status }
+        });
+        return response.data.data;
+    },
 };
 
 export interface Service {
@@ -88,4 +94,22 @@ export interface Pagination {
     limit: number;
     total: number;
     pages: number;
+}
+
+export interface Quote {
+    _id: string;
+    title: string;
+    description?: string;
+    totalPrice: number;
+    status: 'pending' | 'accepted' | 'rejected' | 'expired';
+    paymentStatus: 'pending' | 'paid' | 'refunded';
+    validUntil: string;
+    createdAt: string;
+    clientId: User;
+    professionalId: User;
+    serviceId: {
+        _id: string;
+        title: string;
+        category: string;
+    };
 }
