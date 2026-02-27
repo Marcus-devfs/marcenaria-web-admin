@@ -122,7 +122,7 @@ export default function LoginPage() {
 
                         <Button
                             type="submit"
-                            className="w-full h-12 text-base shadow-lg shadow-primary-600/20 hover:shadow-primary-600/30 transition-all"
+                            className="w-full h-12 text-base shadow-lg shadow-primary-600/20 hover:shadow-primary-600/30 transition-all bg-primary-600 hover:bg-primary-700 text-white"
                             disabled={loading}
                         >
                             {loading ? (

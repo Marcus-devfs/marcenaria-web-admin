@@ -8,7 +8,8 @@ import {
     CreditCard,
     FileText,
     Settings,
-    LogOut
+    LogOut,
+    Hammer
 } from 'lucide-react';
 import clsx from 'clsx';
 
@@ -31,8 +32,14 @@ export function Sidebar() {
 
     return (
         <div className="flex flex-col w-64 bg-white border-r border-gray-200 text-gray-600 min-h-screen">
-            <div className="flex items-center justify-center h-16 border-b border-gray-200">
-                <h1 className="text-xl font-bold text-gray-900">Admin Marcenaria</h1>
+            <div className="flex items-center gap-3 h-16 px-6 border-b border-gray-200">
+                <div className="bg-primary-600 p-2 rounded-lg shadow-sm">
+                    <Hammer className="h-5 w-5 text-white" />
+                </div>
+                <div className="flex flex-col">
+                    <span className="font-bold text-lg tracking-tight text-gray-900 leading-none">Conecta</span>
+                    <span className="font-bold text-lg tracking-tight text-primary-600 leading-none">Marceneiro</span>
+                </div>
             </div>
             <nav className="flex-1 px-4 py-6 space-y-1">
                 {navItems.map((item) => {

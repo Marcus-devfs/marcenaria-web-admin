@@ -186,7 +186,7 @@ function StatCard({ title, value, icon: Icon, color, subtext }: any) {
         <div className={`p-3 rounded-full ${colorClasses[color as keyof typeof colorClasses]}`}>
           <Icon className="w-6 h-6" />
         </div>
-        <div className="ml-4">
+        <div className="ml-2">
           <Text variant="muted" className="text-gray-500">{title}</Text>
           <Text variant="h4" className="text-gray-900">{value}</Text>
           {subtext && <Text variant="small" className="text-gray-400 mt-1">{subtext}</Text>}
