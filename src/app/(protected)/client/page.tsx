@@ -71,6 +71,7 @@ export default function ClientsPage() {
                                 <th className="px-6 py-3">Contato</th>
                                 <th className="px-6 py-3">Status</th>
                                 <th className="px-6 py-3">Cadastro</th>
+                                <th className="px-6 py-3">Integração Asaas</th>
                                 <th className="px-6 py-3 text-right">Ações</th>
                             </tr>
                         </thead>
@@ -82,12 +83,13 @@ export default function ClientsPage() {
                                         <td className="px-6 py-4"><div className="h-4 bg-gray-100 rounded w-40"></div></td>
                                         <td className="px-6 py-4"><div className="h-4 bg-gray-100 rounded w-20"></div></td>
                                         <td className="px-6 py-4"><div className="h-4 bg-gray-100 rounded w-24"></div></td>
+                                        <td className="px-6 py-4"><div className="h-4 bg-gray-100 rounded w-20"></div></td>
                                         <td className="px-6 py-4"></td>
                                     </tr>
                                 ))
                             ) : clients.length === 0 ? (
                                 <tr>
-                                    <td colSpan={5} className="px-6 py-8 text-center text-gray-500">
+                                    <td colSpan={6} className="px-6 py-8 text-center text-gray-500">
                                         Nenhum cliente encontrado.
                                     </td>
                                 </tr>
@@ -115,6 +117,19 @@ export default function ClientsPage() {
                                         </td>
                                         <td className="px-6 py-4 text-gray-500">
                                             {format(new Date(client.createdAt), 'dd/MM/yyyy', { locale: ptBR })}
+                                        </td>
+                                        <td className="px-6 py-4">
+                                            {client.asaasCustomerId ? (
+                                                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-green-50 text-green-700 border border-green-200">
+                                                    <CheckCircle className="w-3 h-3" />
+                                                    Integrado
+                                                </span>
+                                            ) : (
+                                                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-gray-50 text-gray-600 border border-gray-200">
+                                                    <XCircle className="w-3 h-3" />
+                                                    Pendente
+                                                </span>
+                                            )}
                                         </td>
                                         <td className="px-6 py-4 text-right">
                                             <Button variant="ghost" size="sm" className="text-primary-600 hover:text-primary-700 hover:bg-primary-50">

@@ -102,6 +102,8 @@ export interface User {
     isActive: boolean;
     createdAt: string;
     avatar?: string;
+    asaasCustomerId?: string;
+    asaasAccountId?: string;
 }
 
 export interface Pagination {
