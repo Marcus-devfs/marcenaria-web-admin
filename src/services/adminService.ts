@@ -80,6 +80,16 @@ export const adminService = {
         const response = await api.get(`/users/${id}`);
         return response.data.data;
     },
+
+    getServiceById: async (id: string): Promise<Service> => {
+        const response = await api.get(`/admin/services/${id}`);
+        return response.data.data;
+    },
+
+    getQuoteById: async (id: string): Promise<Quote> => {
+        const response = await api.get(`/admin/quotes/${id}`);
+        return response.data.data;
+    },
 };
 
 export interface Service {
@@ -94,7 +104,14 @@ export interface Service {
         min?: number;
         max?: number;
     };
+    address?: Address;
     createdAt: string;
+    images?: string[];
+    routeStartedAt?: string;
+    arrivedAt?: string;
+    serviceStartedAt?: string;
+    updatedAt?: string;
+    acceptedQuote?: Quote;
 }
 
 export interface User {
@@ -148,6 +165,18 @@ export interface Quote {
         _id: string;
         title: string;
         category: string;
+    };
+    materials?: Array<{
+        name: string;
+        quantity: number;
+        unit: string;
+        price: number;
+    }>;
+    labor?: {
+        description: string;
+        hours?: number;
+        pricePerHour?: number;
+        total: number;
     };
 }
 

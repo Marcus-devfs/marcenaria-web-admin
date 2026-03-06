@@ -9,6 +9,7 @@ import { Select } from '@/components/ui/Select';
 import { Search, Filter, PenTool, CheckCircle, AlertCircle, Clock, XCircle } from 'lucide-react';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
+import Link from 'next/link';
 
 export default function ServicesPage() {
     const [services, setServices] = useState<Service[]>([]);
@@ -151,9 +152,11 @@ export default function ServicesPage() {
                                             {format(new Date(service.createdAt), 'dd/MM/yyyy', { locale: ptBR })}
                                         </td>
                                         <td className="px-6 py-4 text-right">
-                                            <Button variant="ghost" size="sm" className="text-primary-600 hover:text-primary-700 hover:bg-primary-50">
-                                                Detalhes
-                                            </Button>
+                                            <Link href={`/services/${service._id}`}>
+                                                <Button variant="ghost" size="sm" className="text-primary-600 hover:text-primary-700 hover:bg-primary-50">
+                                                    Detalhes
+                                                </Button>
+                                            </Link>
                                         </td>
                                     </tr>
                                 ))

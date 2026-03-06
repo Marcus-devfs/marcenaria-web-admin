@@ -9,6 +9,7 @@ import { Select } from '@/components/ui/Select';
 import { Filter } from 'lucide-react';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
+import Link from 'next/link';
 
 export default function QuotesPage() {
     const [quotes, setQuotes] = useState<Quote[]>([]);
@@ -147,9 +148,11 @@ export default function QuotesPage() {
                                             {format(new Date(quote.createdAt), 'dd/MM/yyyy', { locale: ptBR })}
                                         </td>
                                         <td className="px-6 py-4 text-right">
-                                            <Button variant="ghost" size="sm" className="text-primary-600 hover:text-primary-700 hover:bg-primary-50">
-                                                Detalhes
-                                            </Button>
+                                            <Link href={`/quotes/${quote._id}`}>
+                                                <Button variant="ghost" size="sm" className="text-primary-600 hover:text-primary-700 hover:bg-primary-50">
+                                                    Detalhes
+                                                </Button>
+                                            </Link>
                                         </td>
                                     </tr>
                                 ))
