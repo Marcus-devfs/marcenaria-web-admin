@@ -87,6 +87,15 @@ export default function PaymentDetailsPage() {
     const statusInfo = getStatusInfo(transaction.status);
     const StatusIcon = statusInfo.icon;
 
+    const amount = transaction.amount || 0;
+    const gatewayFee = transaction.gatewayFee || 0;
+    const appFee = transaction.appFee || transaction.platformFee || 0;
+    const netAmount = amount - gatewayFee - appFee;
+
+    const gatewayPercentage = amount > 0 ? ((gatewayFee / amount) * 100).toFixed(1) : '0';
+    const appPercentage = amount > 0 ? ((appFee / amount) * 100).toFixed(1) : '0';
+    const netPercentage = amount > 0 ? ((netAmount / amount) * 100).toFixed(1) : '0';
+
     return (
         <div className="max-w-5xl mx-auto space-y-8 pb-12">
             {/* Header */}
@@ -128,24 +137,32 @@ export default function PaymentDetailsPage() {
                                 <div className="absolute top-0 right-0 p-3 opacity-10 group-hover:opacity-20 transition-opacity">
                                     <DollarSign className="w-12 h-12 text-white" />
                                 </div>
-                                <Text variant="small" className="text-gray-400 font-bold uppercase tracking-widest mb-1 text-[10px]">Valor do Serviço</Text>
-                                <Text variant="h4" className="font-black">{formatCurrency(transaction.amount)}</Text>
+                                <div className="flex justify-between items-end">
+                                    <Text variant="small" className="text-gray-400 font-bold uppercase tracking-widest mb-1 text-[10px]">Valor do Serviço Cobrado</Text>
+                                </div>
+                                <Text variant="h4" className="font-black">{formatCurrency(amount)}</Text>
                             </Card>
 
                             {/* TAXA GATEWAY */}
                             <Card className="p-4 bg-white border border-rose-100 shadow-sm hover:shadow-md transition-shadow">
-                                <Text variant="small" className="font-bold uppercase tracking-widest mb-1 text-[10px]">Taxa Gateway (Asaas)</Text>
+                                <div className="flex justify-between items-start">
+                                    <Text variant="small" className="font-bold uppercase tracking-widest mb-1 text-[10px]">Taxa Gateway (Asaas)</Text>
+                                    <span className="text-[10px] bg-rose-50 text-rose-600 px-1.5 py-0.5 rounded font-bold">{gatewayPercentage}%</span>
+                                </div>
                                 <div className="flex items-baseline gap-1">
-                                    <Text variant="h4" className="text-rose-600 font-bold">-{formatCurrency(transaction.gatewayFee || 0)}</Text>
+                                    <Text variant="h4" className="text-rose-600 font-bold">-{formatCurrency(gatewayFee)}</Text>
                                 </div>
                                 <Text variant="xsmall" className="mt-2 text-gray-400 font-medium">Retido pelo provedor</Text>
                             </Card>
 
                             {/* COMISSÃO APP */}
                             <Card className="p-4 bg-white border border-emerald-100 shadow-sm hover:shadow-md transition-shadow">
-                                <Text variant="small" className="font-bold uppercase tracking-widest mb-1 text-[10px]">Comissão Plataforma</Text>
+                                <div className="flex justify-between items-start">
+                                    <Text variant="small" className="font-bold uppercase tracking-widest mb-1 text-[10px]">Comissão Plataforma</Text>
+                                    <span className="text-[10px] bg-emerald-50 text-emerald-600 px-1.5 py-0.5 rounded font-bold">{appPercentage}%</span>
+                                </div>
                                 <div className="flex items-baseline gap-1">
-                                    <Text variant="h4" className="text-emerald-600 font-bold">-{formatCurrency(transaction.appFee || transaction.platformFee || 0)}</Text>
+                                    <Text variant="h4" className="text-emerald-600 font-bold">-{formatCurrency(appFee)}</Text>
                                 </div>
                                 <Text variant="xsmall" className="mt-2 text-emerald-500 font-bold">Saldo Receita Admin</Text>
                             </Card>
@@ -155,11 +172,14 @@ export default function PaymentDetailsPage() {
                                 <div className="absolute top-0 right-0 p-3 opacity-10 group-hover:opacity-20 transition-opacity">
                                     <ArrowUpRight className="w-12 h-12 text-white" />
                                 </div>
-                                <Text variant="small" className="font-bold uppercase tracking-widest mb-1 text-[10px]">Líquido Profissional</Text>
+                                <div className="flex justify-between items-start">
+                                    <Text variant="small" className="font-bold uppercase tracking-widest mb-1 text-[10px]">Líquido Profissional</Text>
+                                    <span className="text-[10px] bg-white/20 text-white px-1.5 py-0.5 rounded font-bold">{netPercentage}%</span>
+                                </div>
                                 <Text variant="h4" className="font-black">
-                                    {formatCurrency(transaction.amount - (transaction.gatewayFee || 0) - (transaction.appFee || 0))}
+                                    {formatCurrency(netAmount)}
                                 </Text>
-                                <Text variant="xsmall" className="text-gray-500 mt-2">Disponível para saque</Text>
+                                <Text variant="xsmall" className="mt-2 font-medium">Disponível para saque</Text>
                             </Card>
                         </div>
 
@@ -168,40 +188,40 @@ export default function PaymentDetailsPage() {
                             <div className="space-y-2">
                                 <div className="flex justify-between items-center">
                                     <Text variant="small" className="text-gray-500 font-bold uppercase tracking-widest text-[10px]">Distribuição do Valor</Text>
-                                    <Text variant="small" className="text-gray-900 font-bold">{formatCurrency(transaction.amount)}</Text>
+                                    <Text variant="small" className="text-gray-900 font-bold">{formatCurrency(amount)}</Text>
                                 </div>
                                 <div className="h-3 w-full bg-gray-200 rounded-full overflow-hidden flex">
                                     {/* Profissional Part */}
                                     <div
                                         className="h-full bg-blue-500 transition-all duration-500 ease-out"
-                                        style={{ width: `${((transaction.amount - (transaction.gatewayFee || 0) - (transaction.appFee || 0)) / transaction.amount) * 100}%` }}
+                                        style={{ width: `${netPercentage}%` }}
                                         title="Líquido Profissional"
                                     ></div>
                                     {/* App Commission Part */}
                                     <div
                                         className="h-full bg-emerald-500 transition-all duration-500 ease-out"
-                                        style={{ width: `${((transaction.appFee || 0) / transaction.amount) * 100}%` }}
+                                        style={{ width: `${appPercentage}%` }}
                                         title="Comissão Plataforma"
                                     ></div>
                                     {/* Gateway Part */}
                                     <div
                                         className="h-full bg-rose-500 transition-all duration-500 ease-out"
-                                        style={{ width: `${((transaction.gatewayFee || 0) / transaction.amount) * 100}%` }}
+                                        style={{ width: `${gatewayPercentage}%` }}
                                         title="Taxas Gateway"
                                     ></div>
                                 </div>
                                 <div className="flex gap-4">
                                     <div className="flex items-center gap-1.5">
                                         <div className="w-2 h-2 rounded-full bg-blue-500"></div>
-                                        <span className="text-[10px] text-gray-500 font-medium">Repasse Profissional</span>
+                                        <span className="text-[10px] text-gray-500 font-medium">Líquido ({netPercentage}%)</span>
                                     </div>
                                     <div className="flex items-center gap-1.5">
                                         <div className="w-2 h-2 rounded-full bg-emerald-500"></div>
-                                        <span className="text-[10px] text-gray-500 font-medium">Comissão Admin</span>
+                                        <span className="text-[10px] text-gray-500 font-medium">Comissão ({appPercentage}%)</span>
                                     </div>
                                     <div className="flex items-center gap-1.5">
                                         <div className="w-2 h-2 rounded-full bg-rose-500"></div>
-                                        <span className="text-[10px] text-gray-500 font-medium">Taxas Gateway</span>
+                                        <span className="text-[10px] text-gray-500 font-medium">Gateway ({gatewayPercentage}%)</span>
                                     </div>
                                 </div>
                             </div>
