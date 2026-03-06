@@ -61,19 +61,28 @@ export const adminService = {
         return response.data.data;
     },
     getPayments: async (page = 1, limit = 10, status = ''): Promise<{ transactions: Transaction[]; pagination: Pagination }> => {
-        const response = await api.get('/payments/admin/all', {
+        const response = await api.get('/admin/payments', {
             params: { page, limit, status }
         });
 
-        // Map the backend 'payments' array to 'transactions' as expected by the frontend
         return {
             transactions: response.data.data.payments,
-            pagination: response.data.data.pagination
+            pagination: {
+                page: response.data.data.page,
+                limit: response.data.data.limit,
+                total: response.data.data.total,
+                pages: response.data.data.pages
+            }
         };
     },
     getPaymentOverviewStats: async (): Promise<any> => {
-        const response = await api.get('/payments/admin/stats/overview');
+        const response = await api.get('/admin/payments/stats');
         return response.data.data;
+    },
+
+    getPaymentById: async (id: string): Promise<Transaction> => {
+        const response = await api.get(`/admin/payments/${id}`);
+        return response.data.data.payment;
     },
 
     getUserById: async (id: string): Promise<{ user: User; addresses: any[] }> => {
@@ -192,4 +201,7 @@ export interface Transaction {
     clientId: User;
     professionalId: User;
     createdAt: string;
+    transactionId?: string;
+    availableAt?: string;
+    gatewayFee?: number;
 }
