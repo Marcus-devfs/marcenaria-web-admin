@@ -61,9 +61,18 @@ export const adminService = {
         return response.data.data;
     },
     getPayments: async (page = 1, limit = 10, status = ''): Promise<{ transactions: Transaction[]; pagination: Pagination }> => {
-        const response = await api.get('/admin/transactions', {
+        const response = await api.get('/payments/admin/all', {
             params: { page, limit, status }
         });
+
+        // Map the backend 'payments' array to 'transactions' as expected by the frontend
+        return {
+            transactions: response.data.data.payments,
+            pagination: response.data.data.pagination
+        };
+    },
+    getPaymentOverviewStats: async (): Promise<any> => {
+        const response = await api.get('/payments/admin/stats/overview');
         return response.data.data;
     },
 };
@@ -124,7 +133,8 @@ export interface Transaction {
     _id: string;
     quoteId: string | Quote;
     amount: number;
-    platformFee: number;
+    appFee: number;
+    platformFee?: number; // legacy frontend name
     netAmount: number;
     status: 'pending' | 'completed' | 'failed' | 'refunded';
     paymentMethod: string;

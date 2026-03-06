@@ -14,6 +14,7 @@ import { formatCurrency } from '@/lib/utils';
 export default function PaymentsPage() {
     const [transactions, setTransactions] = useState<Transaction[]>([]);
     const [pagination, setPagination] = useState<Pagination | null>(null);
+    const [stats, setStats] = useState({ totalAmount: 0, totalAppFee: 0, totalNetAmount: 0 });
     const [loading, setLoading] = useState(true);
     const [status, setStatus] = useState('');
     const [page, setPage] = useState(1);
@@ -32,7 +33,7 @@ export default function PaymentsPage() {
                     _id: 'mock1',
                     quoteId: 'quote123',
                     amount: 4500.00,
-                    platformFee: 450.00,
+                    appFee: 450.00,
                     netAmount: 4050.00,
                     status: 'completed',
                     paymentMethod: 'credit_card',
@@ -44,7 +45,7 @@ export default function PaymentsPage() {
                     _id: 'mock2',
                     quoteId: 'quote124',
                     amount: 1200.00,
-                    platformFee: 120.00,
+                    appFee: 120.00,
                     netAmount: 1080.00,
                     status: 'pending',
                     paymentMethod: 'pix',
@@ -58,8 +59,18 @@ export default function PaymentsPage() {
         }
     };
 
+    const fetchStats = async () => {
+        try {
+            const data = await adminService.getPaymentOverviewStats();
+            setStats(data);
+        } catch (error) {
+            console.error('Failed to fetch payment stats', error);
+        }
+    };
+
     useEffect(() => {
         fetchPayments();
+        fetchStats();
     }, [page, status]);
 
     const getStatusColor = (status: string) => {
@@ -99,7 +110,7 @@ export default function PaymentsPage() {
                     </div>
                     <div className="text-left">
                         <Text variant="muted" className="text-gray-500">Volume Total</Text>
-                        <Text variant="h3" className="text-gray-900">{formatCurrency(154000)}</Text>
+                        <Text variant="h3" className="text-gray-900">{formatCurrency(stats?.totalAmount || 0)}</Text>
                     </div>
                 </Card>
                 <Card className="bg-white border text-center border-gray-100 shadow-sm p-4 flex items-center gap-4">
@@ -108,7 +119,7 @@ export default function PaymentsPage() {
                     </div>
                     <div className="text-left">
                         <Text variant="muted" className="text-gray-500">Comissões (Receita)</Text>
-                        <Text variant="h3" className="text-gray-900">{formatCurrency(15400)}</Text>
+                        <Text variant="h3" className="text-gray-900">{formatCurrency(stats?.totalAppFee || 0)}</Text>
                     </div>
                 </Card>
                 <Card className="bg-white border text-center border-gray-100 shadow-sm p-4 flex items-center gap-4">
@@ -117,7 +128,7 @@ export default function PaymentsPage() {
                     </div>
                     <div className="text-left">
                         <Text variant="muted" className="text-gray-500">Repasses (Profissionais)</Text>
-                        <Text variant="h3" className="text-gray-900">{formatCurrency(138600)}</Text>
+                        <Text variant="h3" className="text-gray-900">{formatCurrency(stats?.totalNetAmount || 0)}</Text>
                     </div>
                 </Card>
             </div>
@@ -188,7 +199,7 @@ export default function PaymentsPage() {
                                             {formatCurrency(transaction.amount)}
                                         </td>
                                         <td className="px-6 py-4 font-bold text-green-600">
-                                            + {formatCurrency(transaction.platformFee)}
+                                            + {formatCurrency(transaction.appFee || transaction.platformFee || 0)}
                                         </td>
                                         <td className="px-6 py-4">
                                             <div className="flex flex-col gap-1">
