@@ -120,19 +120,91 @@ export default function PaymentDetailsPage() {
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 {/* Main Info */}
                 <div className="lg:col-span-2 space-y-6">
-                    {/* Summary Cards */}
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        <Card className="p-4 bg-gray-900 text-white">
-                            <Text variant="small" className="text-gray-400 font-bold uppercase tracking-wider mb-1">Valor Total</Text>
-                            <Text variant="h4" className="text-white font-bold">{formatCurrency(transaction.amount)}</Text>
-                        </Card>
-                        <Card className="p-4 bg-white border border-green-100">
-                            <Text variant="small" className="text-green-600 font-bold uppercase tracking-wider mb-1">Comissão App</Text>
-                            <Text variant="h4" className="text-green-700 font-bold">+ {formatCurrency(transaction.appFee || transaction.platformFee || 0)}</Text>
-                        </Card>
-                        <Card className="p-4 bg-white border border-blue-100">
-                            <Text variant="small" className="text-blue-600 font-bold uppercase tracking-wider mb-1">Líquido Profissional</Text>
-                            <Text variant="h4" className="text-blue-700 font-bold">{formatCurrency(transaction.netAmount || 0)}</Text>
+                    {/* Financial Breakdown - Premium Layout */}
+                    <div className="space-y-4">
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                            {/* VALOR DO SERVIÇO */}
+                            <Card className="p-4 bg-gray-900 border-none shadow-xl shadow-gray-200 overflow-hidden relative group">
+                                <div className="absolute top-0 right-0 p-3 opacity-10 group-hover:opacity-20 transition-opacity">
+                                    <DollarSign className="w-12 h-12 text-white" />
+                                </div>
+                                <Text variant="small" className="text-gray-400 font-bold uppercase tracking-widest mb-1 text-[10px]">Valor do Serviço</Text>
+                                <Text variant="h4" className="font-black">{formatCurrency(transaction.amount)}</Text>
+                            </Card>
+
+                            {/* TAXA GATEWAY */}
+                            <Card className="p-4 bg-white border border-rose-100 shadow-sm hover:shadow-md transition-shadow">
+                                <Text variant="small" className="font-bold uppercase tracking-widest mb-1 text-[10px]">Taxa Gateway (Asaas)</Text>
+                                <div className="flex items-baseline gap-1">
+                                    <Text variant="h4" className="text-rose-600 font-bold">-{formatCurrency(transaction.gatewayFee || 0)}</Text>
+                                </div>
+                                <Text variant="xsmall" className="mt-2 text-gray-400 font-medium">Retido pelo provedor</Text>
+                            </Card>
+
+                            {/* COMISSÃO APP */}
+                            <Card className="p-4 bg-white border border-emerald-100 shadow-sm hover:shadow-md transition-shadow">
+                                <Text variant="small" className="font-bold uppercase tracking-widest mb-1 text-[10px]">Comissão Plataforma</Text>
+                                <div className="flex items-baseline gap-1">
+                                    <Text variant="h4" className="text-emerald-600 font-bold">-{formatCurrency(transaction.appFee || transaction.platformFee || 0)}</Text>
+                                </div>
+                                <Text variant="xsmall" className="mt-2 text-emerald-500 font-bold">Saldo Receita Admin</Text>
+                            </Card>
+
+                            {/* LÍQUIDO FINAL */}
+                            <Card className="p-4 bg-blue-600 border-none shadow-lg shadow-blue-100 relative overflow-hidden group">
+                                <div className="absolute top-0 right-0 p-3 opacity-10 group-hover:opacity-20 transition-opacity">
+                                    <ArrowUpRight className="w-12 h-12 text-white" />
+                                </div>
+                                <Text variant="small" className="font-bold uppercase tracking-widest mb-1 text-[10px]">Líquido Profissional</Text>
+                                <Text variant="h4" className="font-black">
+                                    {formatCurrency(transaction.amount - (transaction.gatewayFee || 0) - (transaction.appFee || 0))}
+                                </Text>
+                                <Text variant="xsmall" className="text-gray-500 mt-2">Disponível para saque</Text>
+                            </Card>
+                        </div>
+
+                        {/* Visual Distribution Bar */}
+                        <Card className="p-4 bg-gray-50/50 border-gray-100 border shadow-none">
+                            <div className="space-y-2">
+                                <div className="flex justify-between items-center">
+                                    <Text variant="small" className="text-gray-500 font-bold uppercase tracking-widest text-[10px]">Distribuição do Valor</Text>
+                                    <Text variant="small" className="text-gray-900 font-bold">{formatCurrency(transaction.amount)}</Text>
+                                </div>
+                                <div className="h-3 w-full bg-gray-200 rounded-full overflow-hidden flex">
+                                    {/* Profissional Part */}
+                                    <div
+                                        className="h-full bg-blue-500 transition-all duration-500 ease-out"
+                                        style={{ width: `${((transaction.amount - (transaction.gatewayFee || 0) - (transaction.appFee || 0)) / transaction.amount) * 100}%` }}
+                                        title="Líquido Profissional"
+                                    ></div>
+                                    {/* App Commission Part */}
+                                    <div
+                                        className="h-full bg-emerald-500 transition-all duration-500 ease-out"
+                                        style={{ width: `${((transaction.appFee || 0) / transaction.amount) * 100}%` }}
+                                        title="Comissão Plataforma"
+                                    ></div>
+                                    {/* Gateway Part */}
+                                    <div
+                                        className="h-full bg-rose-500 transition-all duration-500 ease-out"
+                                        style={{ width: `${((transaction.gatewayFee || 0) / transaction.amount) * 100}%` }}
+                                        title="Taxas Gateway"
+                                    ></div>
+                                </div>
+                                <div className="flex gap-4">
+                                    <div className="flex items-center gap-1.5">
+                                        <div className="w-2 h-2 rounded-full bg-blue-500"></div>
+                                        <span className="text-[10px] text-gray-500 font-medium">Repasse Profissional</span>
+                                    </div>
+                                    <div className="flex items-center gap-1.5">
+                                        <div className="w-2 h-2 rounded-full bg-emerald-500"></div>
+                                        <span className="text-[10px] text-gray-500 font-medium">Comissão Admin</span>
+                                    </div>
+                                    <div className="flex items-center gap-1.5">
+                                        <div className="w-2 h-2 rounded-full bg-rose-500"></div>
+                                        <span className="text-[10px] text-gray-500 font-medium">Taxas Gateway</span>
+                                    </div>
+                                </div>
+                            </div>
                         </Card>
                     </div>
 
