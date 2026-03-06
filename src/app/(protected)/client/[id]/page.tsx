@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import { adminService, User, Address } from '@/services/adminService';
+import { adminService, User, Address, Quote } from '@/services/adminService';
 import { Text } from '@/components/ui/Text';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
@@ -16,16 +16,22 @@ import {
     XCircle,
     User as UserIcon,
     ShieldCheck,
-    CreditCard
+    CreditCard,
+    Clock,
+    Briefcase,
+    ArrowUpRight
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
+import { formatCurrency } from '@/lib/utils';
+import Link from 'next/link';
 
 export default function ClientDetailsPage() {
     const { id } = useParams();
     const router = useRouter();
     const [client, setClient] = useState<User | null>(null);
     const [addresses, setAddresses] = useState<Address[]>([]);
+    const [quotes, setQuotes] = useState<Quote[]>([]);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
@@ -35,6 +41,9 @@ export default function ClientDetailsPage() {
                 const data = await adminService.getUserById(id as string);
                 setClient(data.user);
                 setAddresses(data.addresses);
+
+                const history = await adminService.getUserQuotes(id as string);
+                setQuotes(history);
             } catch (error) {
                 console.error('Failed to fetch client details', error);
             } finally {
@@ -209,15 +218,74 @@ export default function ClientDetailsPage() {
                         </div>
                     </Card>
 
-                    {/* Placeholder for future sections like Service History */}
-                    <Card className="p-12 border border-dashed border-gray-200 bg-gray-50/30 flex flex-col items-center justify-center text-center">
-                        <div className="h-12 w-12 rounded-full bg-gray-100 flex items-center justify-center mb-4 text-gray-400">
-                            <UserIcon className="h-6 w-6" />
+                    <Card className="bg-white border border-gray-100 shadow-sm overflow-hidden">
+                        <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
+                            <div className="flex items-center gap-2">
+                                <CreditCard className="h-5 w-5 text-gray-400" />
+                                <Text variant="h4" className="text-gray-900">Histórico de Pedidos</Text>
+                            </div>
+                            <span className="text-xs font-medium bg-gray-100 text-gray-600 px-2 py-1 rounded-full">
+                                {quotes.length} {quotes.length === 1 ? 'pedido' : 'pedidos'}
+                            </span>
                         </div>
-                        <Text variant="h4" className="text-gray-400">Histórico de Pedidos</Text>
-                        <Text variant="small" className="text-gray-400 max-w-xs mt-2">
-                            Em breve você poderá visualizar todos os serviços solicitados por este cliente nesta seção.
-                        </Text>
+
+                        <div className="divide-y divide-gray-100">
+                            {quotes.length === 0 ? (
+                                <div className="p-12 text-center">
+                                    <div className="h-12 w-12 rounded-full bg-gray-100 flex items-center justify-center mx-auto mb-4 text-gray-400">
+                                        <Clock className="h-6 w-6" />
+                                    </div>
+                                    <Text variant="h4" className="text-gray-400">Nenhum pedido encontrado</Text>
+                                    <Text variant="small" className="text-gray-400 max-w-xs mx-auto mt-2">
+                                        Este cliente ainda não solicitou nenhum serviço através da plataforma.
+                                    </Text>
+                                </div>
+                            ) : (
+                                quotes.map((quote) => (
+                                    <div key={quote._id} className="p-4 hover:bg-gray-50 transition-colors flex items-center justify-between group">
+                                        <div className="flex items-center gap-4">
+                                            <div className="h-10 w-10 rounded-lg bg-gray-100 flex items-center justify-center text-gray-500 group-hover:bg-primary-50 group-hover:text-primary-600 transition-colors">
+                                                <Briefcase className="h-5 w-5" />
+                                            </div>
+                                            <div>
+                                                <div className="flex items-center gap-2">
+                                                    <Text variant="h4" className="text-sm font-bold text-gray-900">{quote.serviceId.title}</Text>
+                                                    <span className={`text-[10px] uppercase tracking-wider font-bold px-1.5 py-0.5 rounded ${quote.status === 'accepted' ? 'bg-green-100 text-green-700' :
+                                                        quote.status === 'pending' ? 'bg-yellow-100 text-yellow-700' : 'bg-gray-100 text-gray-600'
+                                                        }`}>
+                                                        {quote.status === 'accepted' ? 'Aceito' : quote.status === 'pending' ? 'Pendente' : quote.status}
+                                                    </span>
+                                                </div>
+                                                <div className="flex items-center gap-3 mt-1">
+                                                    <Text variant="xsmall" className="text-gray-500 flex items-center gap-1">
+                                                        <UserIcon className="h-3 w-3" />
+                                                        {quote.professionalId?.name || 'Aguardando'}
+                                                    </Text>
+                                                    <Text variant="xsmall" className="text-gray-400">•</Text>
+                                                    <Text variant="xsmall" className="text-gray-500">
+                                                        {format(new Date(quote.createdAt), "dd 'de' MMM, yyyy", { locale: ptBR })}
+                                                    </Text>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div className="text-right flex items-center gap-6">
+                                            <div className="hidden md:block">
+                                                <Text variant="h4" className="text-primary-600 font-black">{formatCurrency(quote.totalPrice)}</Text>
+                                                <Text variant="xsmall" className={`font-bold mt-0.5 ${quote.paymentStatus === 'paid' ? 'text-green-600' : 'text-gray-400'
+                                                    }`}>
+                                                    {quote.paymentStatus === 'paid' ? 'Pago' : 'Pagamento Pendente'}
+                                                </Text>
+                                            </div>
+                                            <Link href={`/quotes/${quote._id}`}>
+                                                <Button variant="ghost" size="sm" className="h-8 w-8 p-0 rounded-full hover:bg-primary-100 hover:text-primary-600">
+                                                    <ArrowUpRight className="h-4 w-4" />
+                                                </Button>
+                                            </Link>
+                                        </div>
+                                    </div>
+                                ))
+                            )}
+                        </div>
                     </Card>
                 </div>
             </div>

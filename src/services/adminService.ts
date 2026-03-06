@@ -99,6 +99,16 @@ export const adminService = {
         const response = await api.get(`/admin/quotes/${id}`);
         return response.data.data;
     },
+
+    getUserQuotes: async (id: string): Promise<Quote[]> => {
+        const response = await api.get(`/admin/users/${id}/quotes`);
+        return response.data.data;
+    },
+
+    getUserServices: async (id: string, role: string): Promise<Service[]> => {
+        const response = await api.get(`/admin/users/${id}/services`, { params: { role } });
+        return response.data.data;
+    },
 };
 
 export interface Service {
