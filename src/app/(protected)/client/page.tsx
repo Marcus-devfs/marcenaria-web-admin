@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import { useState, useEffect } from 'react';
 import { adminService, User, Pagination } from '@/services/adminService';
 import { Text } from '@/components/ui/Text';
@@ -132,9 +133,11 @@ export default function ClientsPage() {
                                             )}
                                         </td>
                                         <td className="px-6 py-4 text-right">
-                                            <Button variant="ghost" size="sm" className="text-primary-600 hover:text-primary-700 hover:bg-primary-50">
-                                                Editar
-                                            </Button>
+                                            <Link href={`/client/${client._id}`}>
+                                                <Button variant="ghost" size="sm" className="text-primary-600 hover:text-primary-700 hover:bg-primary-50">
+                                                    Editar
+                                                </Button>
+                                            </Link>
                                         </td>
                                     </tr>
                                 ))

@@ -75,6 +75,11 @@ export const adminService = {
         const response = await api.get('/payments/admin/stats/overview');
         return response.data.data;
     },
+
+    getUserById: async (id: string): Promise<{ user: User; addresses: any[] }> => {
+        const response = await api.get(`/users/${id}`);
+        return response.data.data;
+    },
 };
 
 export interface Service {
@@ -104,6 +109,21 @@ export interface User {
     avatar?: string;
     asaasCustomerId?: string;
     asaasAccountId?: string;
+}
+
+export interface Address {
+    _id: string;
+    userId: string;
+    title: string;
+    street: string;
+    number: string;
+    complement?: string;
+    neighborhood: string;
+    city: string;
+    state: string;
+    zipCode: string;
+    isDefault: boolean;
+    createdAt: string;
 }
 
 export interface Pagination {
