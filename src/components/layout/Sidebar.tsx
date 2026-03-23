@@ -9,7 +9,8 @@ import {
     FileText,
     Settings,
     LogOut,
-    Hammer
+    Hammer,
+    Headphones,
 } from 'lucide-react';
 import clsx from 'clsx';
 
@@ -20,6 +21,7 @@ const navItems = [
     { name: 'Serviços', href: '/services', icon: Package },
     { name: 'Pagamentos', href: '/payments', icon: CreditCard },
     { name: 'Orçamentos', href: '/quotes', icon: FileText },
+    { name: 'Suporte', href: '/support', icon: Headphones },
     { name: 'Configurações', href: '/settings', icon: Settings },
 ];
 
@@ -43,7 +45,7 @@ export function Sidebar() {
             </div>
             <nav className="flex-1 px-4 py-6 space-y-1">
                 {navItems.map((item) => {
-                    const isActive = pathname === item.href;
+                    const isActive = item.href === '/' ? pathname === '/' : pathname.startsWith(item.href);
                     return (
                         <Link
                             key={item.name}
