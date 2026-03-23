@@ -5,7 +5,7 @@ import { useParams, useRouter } from 'next/navigation';
 import api from '@/lib/api';
 import { Text } from '@/components/ui/Text';
 import { Button } from '@/components/ui/Button';
-import { ArrowLeft, Send, User, Headphones } from 'lucide-react';
+import { ArrowLeft, Send, User, Headphones, XCircle, RotateCcw } from 'lucide-react';
 
 interface SupportMessage {
     senderId: string;
@@ -28,12 +28,6 @@ interface SupportTicket {
     createdAt: string;
     updatedAt: string;
 }
-
-const STATUS_OPTIONS = [
-    { value: 'open', label: 'Aberto' },
-    { value: 'in_progress', label: 'Em andamento' },
-    { value: 'closed', label: 'Encerrado' },
-];
 
 const STATUS_BADGE: Record<string, { label: string; className: string }> = {
     open: { label: 'Aberto', className: 'bg-blue-50 text-blue-700' },
@@ -136,17 +130,25 @@ export default function SupportTicketDetailPage() {
                         </Text>
                     </div>
                 </div>
-                {/* Status selector */}
-                <select
-                    value={ticket.status}
-                    onChange={(e) => handleStatusChange(e.target.value)}
-                    disabled={updatingStatus}
-                    className="text-sm border border-gray-200 rounded-lg px-3 py-1.5 bg-white text-gray-700 disabled:opacity-60"
-                >
-                    {STATUS_OPTIONS.map((opt) => (
-                        <option key={opt.value} value={opt.value}>{opt.label}</option>
-                    ))}
-                </select>
+                {ticket.status === 'closed' ? (
+                    <button
+                        onClick={() => handleStatusChange('open')}
+                        disabled={updatingStatus}
+                        className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-blue-600 border border-blue-200 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors disabled:opacity-60"
+                    >
+                        <RotateCcw className="w-4 h-4" />
+                        {updatingStatus ? 'Aguarde...' : 'Reabrir'}
+                    </button>
+                ) : (
+                    <button
+                        onClick={() => handleStatusChange('closed')}
+                        disabled={updatingStatus}
+                        className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-red-600 border border-red-200 bg-red-50 rounded-lg hover:bg-red-100 transition-colors disabled:opacity-60"
+                    >
+                        <XCircle className="w-4 h-4" />
+                        {updatingStatus ? 'Aguarde...' : 'Encerrar chamado'}
+                    </button>
+                )}
             </div>
 
             {/* Messages */}

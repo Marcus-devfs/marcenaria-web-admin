@@ -1,5 +1,8 @@
+'use client';
+
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { useEffect, useState } from 'react';
 import {
     LayoutDashboard,
     Users,
@@ -13,6 +16,9 @@ import {
     Headphones,
 } from 'lucide-react';
 import clsx from 'clsx';
+import { useAuth } from '@/contexts/AuthContext';
+import { Button } from '@/components/ui/Button';
+import api from '@/lib/api';
 
 const navItems = [
     { name: 'Dashboard', href: '/', icon: LayoutDashboard },
@@ -25,12 +31,24 @@ const navItems = [
     { name: 'Configurações', href: '/settings', icon: Settings },
 ];
 
-import { useAuth } from '@/contexts/AuthContext';
-import { Button } from '@/components/ui/Button';
-
 export function Sidebar() {
     const pathname = usePathname();
     const { logout } = useAuth();
+    const [openTickets, setOpenTickets] = useState(0);
+
+    useEffect(() => {
+        const fetchOpenCount = async () => {
+            try {
+                const res = await api.get('/support/admin/all?status=open&limit=1');
+                setOpenTickets(res.data.data.pagination.total || 0);
+            } catch {
+                // silently ignore
+            }
+        };
+        fetchOpenCount();
+        const interval = setInterval(fetchOpenCount, 60_000);
+        return () => clearInterval(interval);
+    }, []);
 
     return (
         <div className="flex flex-col w-64 bg-white border-r border-gray-200 text-gray-600 min-h-screen">
@@ -46,6 +64,7 @@ export function Sidebar() {
             <nav className="flex-1 px-4 py-6 space-y-1">
                 {navItems.map((item) => {
                     const isActive = item.href === '/' ? pathname === '/' : pathname.startsWith(item.href);
+                    const isSupport = item.href === '/support';
                     return (
                         <Link
                             key={item.name}
@@ -57,8 +76,13 @@ export function Sidebar() {
                                     : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
                             )}
                         >
-                            <item.icon className={clsx("w-5 h-5 mr-3", isActive ? "text-primary-600" : "text-gray-400 group-hover:text-gray-500")} />
-                            {item.name}
+                            <item.icon className={clsx("w-5 h-5 mr-3", isActive ? "text-primary-600" : "text-gray-400")} />
+                            <span className="flex-1">{item.name}</span>
+                            {isSupport && openTickets > 0 && (
+                                <span className="ml-auto min-w-[20px] h-5 px-1.5 flex items-center justify-center rounded-full bg-red-500 text-white text-xs font-bold">
+                                    {openTickets > 99 ? '99+' : openTickets}
+                                </span>
+                            )}
                         </Link>
                     );
                 })}
@@ -69,7 +93,7 @@ export function Sidebar() {
                     onClick={logout}
                     className="w-full justify-start px-4"
                 >
-                    <LogOut className="w-5 h-5 mr-3 text-gray-400 group-hover:text-gray-500" />
+                    <LogOut className="w-5 h-5 mr-3 text-gray-400" />
                     Sair
                 </Button>
             </div>
