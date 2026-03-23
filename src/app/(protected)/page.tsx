@@ -4,7 +4,9 @@ import { useEffect, useState } from 'react';
 import { adminService, DashboardStats } from '@/services/adminService';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { formatCurrency, formatNumber } from '@/lib/utils';
-import { Users, Briefcase, DollarSign, FileText, Star } from 'lucide-react';
+import { Users, Briefcase, DollarSign, FileText, Headphones, AlertCircle } from 'lucide-react';
+import Link from 'next/link';
+import api from '@/lib/api';
 
 import { Text } from '@/components/ui/Text';
 
@@ -14,6 +16,7 @@ export default function Dashboard() {
   const [stats, setStats] = useState<DashboardStats | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [openTickets, setOpenTickets] = useState(0);
 
   useEffect(() => {
     const fetchStats = async () => {
@@ -29,6 +32,10 @@ export default function Dashboard() {
     };
 
     fetchStats();
+
+    api.get('/support/admin/all?status=open&limit=1')
+      .then((res) => setOpenTickets(res.data.data.pagination.total || 0))
+      .catch(() => {});
   }, []);
 
   if (loading) {
@@ -85,6 +92,21 @@ export default function Dashboard() {
   return (
     <div className="space-y-6 bg-gray-50 p-6 min-h-full">
       <Text variant="h3" className="text-gray-900">Dashboard Geral</Text>
+
+      {/* Alerta de tickets abertos */}
+      {openTickets > 0 && (
+        <Link href="/support" className='px-4'>
+          <div className="flex items-center gap-3 bg-red-50 border border-red-200 rounded-xl px-5 py-3 hover:bg-red-100 transition-colors cursor-pointer">
+            <AlertCircle className="w-5 h-5 text-red-500 shrink-0" />
+            <Text variant="body" className="text-red-700 font-medium flex-1">
+              {openTickets === 1
+                ? 'Há 1 ticket de suporte aberto aguardando resposta.'
+                : `Há ${openTickets} tickets de suporte abertos aguardando resposta.`}
+            </Text>
+            <span className="text-red-600 text-sm font-semibold">Ver tickets →</span>
+          </div>
+        </Link>
+      )}
 
       {/* Overview Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
