@@ -6,10 +6,11 @@ import { Text } from '@/components/ui/Text';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 import { Select } from '@/components/ui/Select';
-import { Filter, DollarSign, ArrowUpRight, ArrowDownRight } from 'lucide-react';
+import { Filter, DollarSign, ArrowUpRight, ArrowDownRight, Download } from 'lucide-react';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { formatCurrency } from '@/lib/utils';
+import { downloadCsv } from '@/lib/csv';
 import Link from 'next/link';
 
 export default function PaymentsPage() {
@@ -28,33 +29,7 @@ export default function PaymentsPage() {
             setPagination(data.pagination);
         } catch (error) {
             console.error('Failed to fetch payments', error);
-            // Mock data for display if API is not yet ready
-            setTransactions([
-                {
-                    _id: 'mock1',
-                    quoteId: 'quote123',
-                    amount: 4500.00,
-                    appFee: 450.00,
-                    netAmount: 4050.00,
-                    status: 'completed',
-                    paymentMethod: 'credit_card',
-                    clientId: { _id: 'u1', name: 'João Silva', email: 'joao@email.com', role: 'client', isVerified: true, isActive: true, createdAt: new Date().toISOString() },
-                    professionalId: { _id: 'p1', name: 'Marcenaria XYZ', email: 'xyz@marcenaria.com', role: 'professional', isVerified: true, isActive: true, createdAt: new Date().toISOString() },
-                    createdAt: new Date().toISOString(),
-                },
-                {
-                    _id: 'mock2',
-                    quoteId: 'quote124',
-                    amount: 1200.00,
-                    appFee: 120.00,
-                    netAmount: 1080.00,
-                    status: 'pending',
-                    paymentMethod: 'pix',
-                    clientId: { _id: 'u2', name: 'Maria Souza', email: 'maria@email.com', role: 'client', isVerified: true, isActive: true, createdAt: new Date().toISOString() },
-                    professionalId: { _id: 'p2', name: 'Carlos Marceneiro', email: 'carlos@marcenaria.com', role: 'professional', isVerified: true, isActive: true, createdAt: new Date().toISOString() },
-                    createdAt: new Date().toISOString(),
-                }
-            ]);
+            setTransactions([]);
         } finally {
             setLoading(false);
         }
@@ -94,6 +69,23 @@ export default function PaymentsPage() {
         }
     };
 
+    const handleExportCsv = () => {
+        downloadCsv(
+            `pagamentos-${format(new Date(), 'yyyy-MM-dd')}.csv`,
+            ['ID', 'Cliente', 'Profissional', 'Valor', 'Comissão', 'Status', 'Método', 'Data'],
+            transactions.map((t) => [
+                t._id,
+                t.clientId?.name || '',
+                t.professionalId?.name || '',
+                t.amount,
+                t.appFee || t.platformFee || 0,
+                getStatusLabel(t.status),
+                t.paymentMethod,
+                format(new Date(t.createdAt), 'dd/MM/yyyy HH:mm', { locale: ptBR }),
+            ])
+        );
+    };
+
     return (
         <div className="space-y-6">
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
@@ -101,6 +93,15 @@ export default function PaymentsPage() {
                     <Text variant="h3" className="text-gray-900">Pagamentos e Receitas</Text>
                     <Text variant="body" className="text-gray-500">Visualize todas as transações, orçamentos pagos e comissões da plataforma.</Text>
                 </div>
+                <Button
+                    variant="secondary"
+                    size="sm"
+                    disabled={transactions.length === 0}
+                    onClick={handleExportCsv}
+                >
+                    <Download className="w-4 h-4 mr-2" />
+                    Exportar CSV
+                </Button>
             </div>
 
             {/* Overall Stats (Mocked or derived) */}

@@ -140,6 +140,24 @@ export const adminService = {
     changePassword: async (currentPassword: string, newPassword: string): Promise<void> => {
         await api.post('/auth/change-password', { currentPassword, newPassword });
     },
+
+    getReviews: async (page = 1, limit = 10): Promise<{ reviews: AdminReview[]; pagination: Pagination }> => {
+        const response = await api.get('/admin/reviews', { params: { page, limit } });
+        const data = response.data.data;
+        return {
+            reviews: data.reviews,
+            pagination: {
+                page: data.page,
+                limit: data.limit,
+                total: data.total,
+                pages: data.pages,
+            },
+        };
+    },
+
+    deleteReview: async (id: string): Promise<void> => {
+        await api.delete(`/admin/reviews/${id}`);
+    },
 };
 
 export interface Service {
@@ -245,6 +263,16 @@ export interface Transaction {
     transactionId?: string;
     availableAt?: string;
     gatewayFee?: number;
+}
+
+export interface AdminReview {
+    _id: string;
+    rating: number;
+    comment?: string;
+    createdAt: string;
+    client?: { name: string; email: string };
+    professional?: { name: string; email: string };
+    serviceId?: { _id: string; title: string; category?: string };
 }
 
 export interface Withdrawal {

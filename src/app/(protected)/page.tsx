@@ -4,9 +4,10 @@ import { useEffect, useState } from 'react';
 import { adminService, DashboardStats } from '@/services/adminService';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { formatCurrency, formatNumber } from '@/lib/utils';
-import { Users, Briefcase, DollarSign, FileText, Headphones, AlertCircle } from 'lucide-react';
+import { Users, Briefcase, DollarSign, FileText, Headphones, AlertCircle, Star } from 'lucide-react';
 import Link from 'next/link';
 import api from '@/lib/api';
+import { HorizontalBarChart } from '@/components/ui/HorizontalBarChart';
 
 import { Text } from '@/components/ui/Text';
 
@@ -109,7 +110,7 @@ export default function Dashboard() {
       )}
 
       {/* Overview Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
         <StatCard
           title="Total de Usuários"
           value={stats?.users.total || 0}
@@ -139,6 +140,13 @@ export default function Dashboard() {
           color="purple"
           subtext={`${stats?.quotes.byStatus.accepted || 0} Aceitos`}
         />
+        <StatCard
+          title="Avaliações"
+          value={stats?.reviews.total || 0}
+          icon={Star}
+          color="yellow"
+          subtext={`Média ${(stats?.reviews.averageRating || 0).toFixed(1)} ★`}
+        />
       </div>
 
       {/* Detailed Sections */}
@@ -149,44 +157,54 @@ export default function Dashboard() {
             <CardTitle className="text-gray-900">Distribuição de Usuários</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="space-y-4">
-              <div className="flex justify-between items-center border-b border-gray-100 pb-2">
-                <Text variant="body" className="text-gray-600">Profissionais</Text>
-                <Text variant="small" className="text-gray-900">{stats?.users.professionals}</Text>
-              </div>
-              <div className="flex justify-between items-center border-b border-gray-100 pb-2">
-                <Text variant="body" className="text-gray-600">Clientes</Text>
-                <Text variant="small" className="text-gray-900">{stats?.users.clients}</Text>
-              </div>
-              <div className="flex justify-between items-center border-b border-gray-100 pb-2">
-                <Text variant="body" className="text-gray-600">Verificados</Text>
-                <Text variant="small" className="text-green-600">{stats?.users.verified}</Text>
-              </div>
-              <div className="flex justify-between items-center">
-                <Text variant="body" className="text-gray-600">Admins</Text>
-                <Text variant="small" className="text-gray-900">{stats?.users.admins}</Text>
-              </div>
-            </div>
+            <HorizontalBarChart
+              data={{
+                Profissionais: stats?.users.professionals || 0,
+                Clientes: stats?.users.clients || 0,
+                Verificados: stats?.users.verified || 0,
+              }}
+              formatLabel={(key) => key}
+              colorClass="bg-blue-500"
+            />
           </CardContent>
         </Card>
 
-        {/* Service Categories (Placeholder for Chart) */}
+        {/* Service Status */}
+        <Card className="bg-white border border-gray-100 shadow-sm">
+          <CardHeader>
+            <CardTitle className="text-gray-900">Serviços por Status</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <HorizontalBarChart
+              data={stats?.services.byStatus || {}}
+              colorClass="bg-green-500"
+            />
+          </CardContent>
+        </Card>
+
+        {/* Service Categories */}
         <Card className="bg-white border border-gray-100 shadow-sm">
           <CardHeader>
             <CardTitle className="text-gray-900">Serviços por Categoria</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="space-y-4">
-              {Object.entries(stats?.services.byCategory || {}).map(([category, count]) => (
-                <div key={category} className="flex justify-between items-center border-b border-gray-100 pb-2 last:border-0">
-                  <Text variant="body" className="text-gray-600 capitalize">{category.replace('_', ' ')}</Text>
-                  <Text variant="small" className="text-gray-900">{count}</Text>
-                </div>
-              ))}
-              {Object.keys(stats?.services.byCategory || {}).length === 0 && (
-                <Text variant="muted" className="text-center py-4">Nenhum serviço registrado</Text>
-              )}
-            </div>
+            <HorizontalBarChart
+              data={stats?.services.byCategory || {}}
+              colorClass="bg-primary-500"
+            />
+          </CardContent>
+        </Card>
+
+        {/* Payments by Status */}
+        <Card className="bg-white border border-gray-100 shadow-sm">
+          <CardHeader>
+            <CardTitle className="text-gray-900">Pagamentos por Status</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <HorizontalBarChart
+              data={stats?.financials.byStatus || {}}
+              colorClass="bg-yellow-500"
+            />
           </CardContent>
         </Card>
       </div>

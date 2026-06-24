@@ -7,9 +7,10 @@ import { Text } from '@/components/ui/Text';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 import { Input } from '@/components/ui/Input';
-import { Search, User as UserIcon, CheckCircle, XCircle } from 'lucide-react';
+import { Search, Download, CheckCircle, XCircle } from 'lucide-react';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
+import { downloadCsv } from '@/lib/csv';
 
 export default function ClientsPage() {
     const [clients, setClients] = useState<User[]>([]);
@@ -41,6 +42,21 @@ export default function ClientsPage() {
         fetchClients();
     };
 
+    const handleExportCsv = () => {
+        downloadCsv(
+            `clientes-${format(new Date(), 'yyyy-MM-dd')}.csv`,
+            ['Nome', 'Email', 'Telefone', 'Status', 'Asaas', 'Cadastro'],
+            clients.map((c) => [
+                c.name,
+                c.email,
+                c.phone || '',
+                c.isActive ? 'Ativo' : 'Inativo',
+                c.asaasCustomerId ? 'Integrado' : 'Pendente',
+                format(new Date(c.createdAt), 'dd/MM/yyyy', { locale: ptBR }),
+            ])
+        );
+    };
+
     return (
         <div className="space-y-6">
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
@@ -48,7 +64,15 @@ export default function ClientsPage() {
                     <Text variant="h3" className="text-gray-900">Clientes</Text>
                     <Text variant="body" className="text-gray-500">Gerencie os usuários clientes da plataforma.</Text>
                 </div>
-                <Button>Novo Cliente</Button>
+                <Button
+                    variant="secondary"
+                    size="sm"
+                    disabled={clients.length === 0}
+                    onClick={handleExportCsv}
+                >
+                    <Download className="w-4 h-4 mr-2" />
+                    Exportar CSV
+                </Button>
             </div>
 
             <Card className="bg-white border border-gray-100 shadow-sm overflow-hidden">

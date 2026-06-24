@@ -15,6 +15,7 @@ import {
     Hammer,
     Headphones,
     Wallet,
+    Star,
 } from 'lucide-react';
 import clsx from 'clsx';
 import { useAuth } from '@/contexts/AuthContext';
@@ -29,6 +30,7 @@ const navItems = [
     { name: 'Pagamentos', href: '/payments', icon: CreditCard },
     { name: 'Saques', href: '/withdrawals', icon: Wallet },
     { name: 'Orçamentos', href: '/quotes', icon: FileText },
+    { name: 'Avaliações', href: '/reviews', icon: Star },
     { name: 'Suporte', href: '/support', icon: Headphones },
     { name: 'Configurações', href: '/settings', icon: Settings },
 ];
@@ -53,8 +55,8 @@ export function Sidebar() {
     }, []);
 
     return (
-        <div className="flex flex-col w-64 bg-white border-r border-gray-200 text-gray-600 min-h-screen">
-            <div className="flex items-center gap-3 h-16 px-6 border-b border-gray-200">
+        <div className="flex flex-col w-64 shrink-0 bg-white border-r border-gray-200 text-gray-600 h-full">
+            <div className="flex items-center gap-3 h-16 px-6 border-b border-gray-200 shrink-0">
                 <div className="bg-primary-600 p-2 rounded-lg shadow-sm">
                     <Hammer className="h-5 w-5 text-white" />
                 </div>
@@ -63,7 +65,7 @@ export function Sidebar() {
                     <span className="font-bold text-lg tracking-tight text-primary-600 leading-none">Marceneiro</span>
                 </div>
             </div>
-            <nav className="flex-1 px-4 py-6 space-y-1">
+            <nav className="flex-1 min-h-0 overflow-y-auto px-4 py-6 space-y-1">
                 {navItems.map((item) => {
                     const isActive = item.href === '/' ? pathname === '/' : pathname.startsWith(item.href);
                     const isSupport = item.href === '/support';
@@ -89,7 +91,7 @@ export function Sidebar() {
                     );
                 })}
             </nav>
-            <div className="p-4 border-t border-gray-200">
+            <div className="p-4 border-t border-gray-200 shrink-0">
                 <Button
                     variant="ghost"
                     onClick={logout}
