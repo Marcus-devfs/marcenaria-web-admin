@@ -14,6 +14,7 @@ import {
     LogOut,
     Hammer,
     Headphones,
+    Wallet,
 } from 'lucide-react';
 import clsx from 'clsx';
 import { useAuth } from '@/contexts/AuthContext';
@@ -26,6 +27,7 @@ const navItems = [
     { name: 'Profissionais', href: '/professional', icon: UserIcon },
     { name: 'Serviços', href: '/services', icon: Package },
     { name: 'Pagamentos', href: '/payments', icon: CreditCard },
+    { name: 'Saques', href: '/withdrawals', icon: Wallet },
     { name: 'Orçamentos', href: '/quotes', icon: FileText },
     { name: 'Suporte', href: '/support', icon: Headphones },
     { name: 'Configurações', href: '/settings', icon: Settings },

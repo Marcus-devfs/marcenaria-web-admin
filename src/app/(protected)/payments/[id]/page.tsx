@@ -29,12 +29,15 @@ export default function PaymentDetailsPage() {
     const router = useRouter();
     const [transaction, setTransaction] = useState<Transaction | null>(null);
     const [loading, setLoading] = useState(true);
+    const [refundReason, setRefundReason] = useState('');
+    const [refunding, setRefunding] = useState(false);
+    const [refundError, setRefundError] = useState('');
+    const [showRefundForm, setShowRefundForm] = useState(false);
 
     useEffect(() => {
         const fetchPayment = async () => {
             try {
                 const data = await adminService.getPaymentById(id as string);
-                console.log(data);
                 setTransaction(data);
             } catch (error) {
                 console.error('Failed to fetch payment details', error);
@@ -96,6 +99,32 @@ export default function PaymentDetailsPage() {
     const appPercentage = amount > 0 ? ((appFee / amount) * 100).toFixed(1) : '0';
     const netPercentage = amount > 0 ? ((netAmount / amount) * 100).toFixed(1) : '0';
 
+    const handleRefund = async () => {
+        if (!transaction || refundReason.trim().length < 10) {
+            setRefundError('Informe um motivo com pelo menos 10 caracteres.');
+            return;
+        }
+        const confirmed = window.confirm(
+            `Confirmar estorno de ${formatCurrency(amount)}? Esta ação não pode ser desfeita.`
+        );
+        if (!confirmed) return;
+
+        setRefunding(true);
+        setRefundError('');
+        try {
+            const updated = await adminService.refundPayment(transaction._id, refundReason.trim());
+            setTransaction(updated);
+            setShowRefundForm(false);
+            setRefundReason('');
+        } catch (err: any) {
+            setRefundError(err.response?.data?.message || 'Falha ao processar estorno.');
+        } finally {
+            setRefunding(false);
+        }
+    };
+
+    const canRefund = transaction.status === 'completed';
+
     return (
         <div className="max-w-5xl mx-auto space-y-8 pb-12">
             {/* Header */}
@@ -123,7 +152,37 @@ export default function PaymentDetailsPage() {
                             Referência Asaas: <span className="font-mono text-xs">{transaction.transactionId || 'N/A'}</span>
                         </Text>
                     </div>
+                    {canRefund && (
+                        <Button
+                            variant="danger"
+                            size="sm"
+                            onClick={() => setShowRefundForm((v) => !v)}
+                        >
+                            Estornar pagamento
+                        </Button>
+                    )}
                 </div>
+                {showRefundForm && canRefund && (
+                    <Card className="p-4 border border-red-100 bg-red-50/50 space-y-3">
+                        <Text variant="body" className="text-gray-900 font-medium">Estorno administrativo</Text>
+                        <textarea
+                            value={refundReason}
+                            onChange={(e) => setRefundReason(e.target.value)}
+                            placeholder="Descreva o motivo do estorno (mín. 10 caracteres)..."
+                            rows={3}
+                            className="w-full resize-none border border-gray-200 rounded-lg px-3 py-2 text-sm"
+                        />
+                        {refundError && <Text variant="small" className="text-red-600">{refundError}</Text>}
+                        <div className="flex gap-2">
+                            <Button variant="danger" size="sm" onClick={handleRefund} disabled={refunding}>
+                                {refunding ? 'Processando...' : 'Confirmar estorno'}
+                            </Button>
+                            <Button variant="secondary" size="sm" onClick={() => setShowRefundForm(false)}>
+                                Cancelar
+                            </Button>
+                        </div>
+                    </Card>
+                )}
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">

@@ -27,6 +27,10 @@ export default function ServiceDetailsPage() {
     const router = useRouter();
     const [service, setService] = useState<Service | null>(null);
     const [loading, setLoading] = useState(true);
+    const [cancelReason, setCancelReason] = useState('');
+    const [cancelling, setCancelling] = useState(false);
+    const [cancelError, setCancelError] = useState('');
+    const [showCancelForm, setShowCancelForm] = useState(false);
 
     useEffect(() => {
         const fetchService = async () => {
@@ -76,6 +80,29 @@ export default function ServiceDetailsPage() {
     const statusInfo = getStatusInfo(service.status);
     const StatusIcon = statusInfo.icon;
 
+    const canCancel = service.status !== 'completed' && service.status !== 'cancelled';
+
+    const handleCancel = async () => {
+        if (!service) return;
+        const confirmed = window.confirm('Tem certeza que deseja cancelar este serviço?');
+        if (!confirmed) return;
+
+        setCancelling(true);
+        setCancelError('');
+        try {
+            const updated = await adminService.cancelService(
+                service._id,
+                cancelReason.trim() || undefined
+            );
+            setService(updated);
+            setShowCancelForm(false);
+        } catch (err: any) {
+            setCancelError(err.response?.data?.message || 'Falha ao cancelar serviço.');
+        } finally {
+            setCancelling(false);
+        }
+    };
+
     return (
         <div className="max-w-5xl mx-auto space-y-8 pb-12">
             {/* Header */}
@@ -103,7 +130,37 @@ export default function ServiceDetailsPage() {
                             ID: <span className="font-mono text-xs">{service._id}</span>
                         </Text>
                     </div>
+                    {canCancel && (
+                        <Button
+                            variant="danger"
+                            size="sm"
+                            onClick={() => setShowCancelForm((v) => !v)}
+                        >
+                            Cancelar serviço
+                        </Button>
+                    )}
                 </div>
+                {showCancelForm && canCancel && (
+                    <Card className="p-4 border border-red-100 bg-red-50/50 space-y-3">
+                        <Text variant="body" className="text-gray-900 font-medium">Cancelamento administrativo</Text>
+                        <textarea
+                            value={cancelReason}
+                            onChange={(e) => setCancelReason(e.target.value)}
+                            placeholder="Motivo do cancelamento (opcional)..."
+                            rows={2}
+                            className="w-full resize-none border border-gray-200 rounded-lg px-3 py-2 text-sm"
+                        />
+                        {cancelError && <Text variant="small" className="text-red-600">{cancelError}</Text>}
+                        <div className="flex gap-2">
+                            <Button variant="danger" size="sm" onClick={handleCancel} disabled={cancelling}>
+                                {cancelling ? 'Processando...' : 'Confirmar cancelamento'}
+                            </Button>
+                            <Button variant="secondary" size="sm" onClick={() => setShowCancelForm(false)}>
+                                Voltar
+                            </Button>
+                        </div>
+                    </Card>
+                )}
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">

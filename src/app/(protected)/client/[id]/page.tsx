@@ -25,6 +25,7 @@ import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { formatCurrency } from '@/lib/utils';
 import Link from 'next/link';
+import { UserStatusActions } from '@/components/admin/UserStatusActions';
 
 export default function ClientDetailsPage() {
     const { id } = useParams();
@@ -94,9 +95,7 @@ export default function ClientDetailsPage() {
                         <Text variant="body" className="text-gray-500">Detalhes do perfil do cliente</Text>
                     </div>
                 </div>
-                <div className="flex gap-3">
-                    <Button variant="secondary">Editar Perfil</Button>
-                </div>
+                <UserStatusActions user={client} onUpdated={setClient} />
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">

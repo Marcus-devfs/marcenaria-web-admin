@@ -109,6 +109,37 @@ export const adminService = {
         const response = await api.get(`/admin/users/${id}/services`, { params: { role } });
         return response.data.data;
     },
+
+    deactivateUser: async (id: string): Promise<User> => {
+        const response = await api.patch(`/users/${id}/deactivate`);
+        return response.data.data.user;
+    },
+
+    reactivateUser: async (id: string): Promise<User> => {
+        const response = await api.patch(`/users/${id}/reactivate`);
+        return response.data.data.user;
+    },
+
+    refundPayment: async (id: string, reason: string): Promise<Transaction> => {
+        const response = await api.post(`/admin/payments/${id}/refund`, { reason });
+        return response.data.data.payment;
+    },
+
+    cancelService: async (id: string, reason?: string): Promise<Service> => {
+        const response = await api.patch(`/admin/services/${id}/cancel`, { reason });
+        return response.data.data;
+    },
+
+    getWithdrawals: async (page = 1, limit = 10, status = ''): Promise<{ withdrawals: Withdrawal[]; pagination: Pagination }> => {
+        const response = await api.get('/admin/withdrawals', {
+            params: { page, limit, status: status || undefined },
+        });
+        return response.data.data;
+    },
+
+    changePassword: async (currentPassword: string, newPassword: string): Promise<void> => {
+        await api.post('/auth/change-password', { currentPassword, newPassword });
+    },
 };
 
 export interface Service {
@@ -214,4 +245,19 @@ export interface Transaction {
     transactionId?: string;
     availableAt?: string;
     gatewayFee?: number;
+}
+
+export interface Withdrawal {
+    _id: string;
+    professionalId: User | string;
+    amount: number;
+    fee: number;
+    netAmount: number;
+    transferType: 'PIX' | 'TED';
+    status: 'pending' | 'processed' | 'rejected';
+    pixKey?: string;
+    asaasTransferId?: string;
+    asaasStatus?: string;
+    createdAt: string;
+    processedAt?: string;
 }
