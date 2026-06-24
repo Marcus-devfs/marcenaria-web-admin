@@ -1,13 +1,15 @@
 import React from 'react';
+import { cn } from '@/components/ui/Text';
 
 interface CardProps {
     children: React.ReactNode;
     className?: string;
+    style?: React.CSSProperties;
 }
 
-export const Card: React.FC<CardProps> = ({ children, className = '' }) => {
+export const Card: React.FC<CardProps> = ({ children, className = '', style }) => {
     return (
-        <div className={`bg-white shadow rounded-lg p-4 ${className}`}>
+        <div className={cn('bg-white shadow rounded-lg p-4', className)} style={style}>
             {children}
         </div>
     );
@@ -15,7 +17,7 @@ export const Card: React.FC<CardProps> = ({ children, className = '' }) => {
 
 export const CardHeader: React.FC<CardProps> = ({ children, className = '' }) => {
     return (
-        <div className={`border-b pb-4 mb-4 ${className}`}>
+        <div className={cn('border-b pb-4 mb-4', className)}>
             {children}
         </div>
     );
@@ -23,7 +25,7 @@ export const CardHeader: React.FC<CardProps> = ({ children, className = '' }) =>
 
 export const CardTitle: React.FC<CardProps> = ({ children, className = '' }) => {
     return (
-        <h3 className={`text-lg font-medium text-gray-900 ${className}`}>
+        <h3 className={cn('text-lg font-medium text-gray-900', className)}>
             {children}
         </h3>
     );
@@ -31,7 +33,7 @@ export const CardTitle: React.FC<CardProps> = ({ children, className = '' }) => 
 
 export const CardContent: React.FC<CardProps> = ({ children, className = '' }) => {
     return (
-        <div className={`${className}`}>
+        <div className={cn(className)}>
             {children}
         </div>
     );
