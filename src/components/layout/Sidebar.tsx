@@ -16,6 +16,7 @@ import {
     Headphones,
     Wallet,
     Star,
+    Activity,
 } from 'lucide-react';
 import clsx from 'clsx';
 import { useAuth } from '@/contexts/AuthContext';
@@ -32,6 +33,7 @@ const navItems = [
     { name: 'Orçamentos', href: '/quotes', icon: FileText },
     { name: 'Avaliações', href: '/reviews', icon: Star },
     { name: 'Suporte', href: '/support', icon: Headphones },
+    { name: 'Monitoramento', href: '/logs', icon: Activity },
     { name: 'Configurações', href: '/settings', icon: Settings },
 ];
 

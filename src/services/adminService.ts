@@ -158,6 +158,31 @@ export const adminService = {
     deleteReview: async (id: string): Promise<void> => {
         await api.delete(`/admin/reviews/${id}`);
     },
+
+    getLogs: async (
+        page = 1,
+        limit = 20,
+        filters: { action?: string; search?: string; startDate?: string; endDate?: string } = {}
+    ): Promise<{ logs: ActivityLog[]; pagination: Pagination }> => {
+        const response = await api.get('/admin/logs', {
+            params: { page, limit, ...filters },
+        });
+        const data = response.data.data;
+        return {
+            logs: data.logs,
+            pagination: {
+                page: data.page,
+                limit: data.limit,
+                total: data.total,
+                pages: data.pages,
+            },
+        };
+    },
+
+    getLogActions: async (): Promise<string[]> => {
+        const response = await api.get('/admin/logs/actions');
+        return response.data.data.actions;
+    },
 };
 
 export interface Service {
@@ -273,6 +298,30 @@ export interface AdminReview {
     client?: { name: string; email: string };
     professional?: { name: string; email: string };
     serviceId?: { _id: string; title: string; category?: string };
+}
+
+export interface ActivityLog {
+    _id: string;
+    action:
+        | 'login'
+        | 'login_failed'
+        | 'register'
+        | 'service_created'
+        | 'quote_created'
+        | 'quote_accepted'
+        | 'quote_rejected'
+        | 'payment_completed'
+        | 'withdrawal_requested';
+    userId?: string;
+    userName?: string;
+    userEmail?: string;
+    userRole?: string;
+    targetType?: string;
+    targetId?: string;
+    metadata?: Record<string, unknown>;
+    ip?: string;
+    userAgent?: string;
+    createdAt: string;
 }
 
 export interface Withdrawal {
