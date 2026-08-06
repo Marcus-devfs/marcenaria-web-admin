@@ -192,14 +192,14 @@ export default function PaymentDetailsPage() {
                     <div className="space-y-4">
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                             {/* VALOR DO SERVIÇO */}
-                            <Card className="p-4 bg-gray-900 border-none shadow-xl shadow-gray-200 overflow-hidden relative group">
-                                <div className="absolute top-0 right-0 p-3 opacity-10 group-hover:opacity-20 transition-opacity">
-                                    <DollarSign className="w-12 h-12 text-white" />
+                            <Card className="p-4 bg-white border border-gray-100 shadow-sm hover:shadow-md transition-shadow">
+                                <div className="flex items-center gap-2 mb-2">
+                                    <div className="w-8 h-8 rounded-lg bg-primary-50 flex items-center justify-center shrink-0">
+                                        <DollarSign className="w-4 h-4 text-primary-600" />
+                                    </div>
+                                    <Text variant="small" className="text-gray-400 font-bold uppercase tracking-widest text-[10px]">Valor do Serviço Cobrado</Text>
                                 </div>
-                                <div className="flex justify-between items-end">
-                                    <Text variant="small" className="text-gray-400 font-bold uppercase tracking-widest mb-1 text-[10px]">Valor do Serviço Cobrado</Text>
-                                </div>
-                                <Text variant="h4" className="font-black">{formatCurrency(amount)}</Text>
+                                <Text variant="h4" className="text-gray-900 font-black">{formatCurrency(amount)}</Text>
                             </Card>
 
                             {/* TAXA GATEWAY */}
@@ -227,18 +227,20 @@ export default function PaymentDetailsPage() {
                             </Card>
 
                             {/* LÍQUIDO FINAL */}
-                            <Card className="p-4 bg-blue-600 border-none shadow-lg shadow-blue-100 relative overflow-hidden group">
-                                <div className="absolute top-0 right-0 p-3 opacity-10 group-hover:opacity-20 transition-opacity">
-                                    <ArrowUpRight className="w-12 h-12 text-white" />
+                            <Card className="p-4 bg-white border border-blue-100 shadow-sm hover:shadow-md transition-shadow">
+                                <div className="flex justify-between items-start mb-2">
+                                    <div className="flex items-center gap-2">
+                                        <div className="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center shrink-0">
+                                            <ArrowUpRight className="w-4 h-4 text-blue-600" />
+                                        </div>
+                                        <Text variant="small" className="text-gray-400 font-bold uppercase tracking-widest text-[10px]">Líquido Profissional</Text>
+                                    </div>
+                                    <span className="text-[10px] bg-blue-50 text-blue-600 px-1.5 py-0.5 rounded font-bold">{netPercentage}%</span>
                                 </div>
-                                <div className="flex justify-between items-start">
-                                    <Text variant="small" className="font-bold uppercase tracking-widest mb-1 text-[10px]">Líquido Profissional</Text>
-                                    <span className="text-[10px] bg-white/20 text-white px-1.5 py-0.5 rounded font-bold">{netPercentage}%</span>
-                                </div>
-                                <Text variant="h4" className="font-black">
+                                <Text variant="h4" className="text-blue-600 font-black">
                                     {formatCurrency(netAmount)}
                                 </Text>
-                                <Text variant="xsmall" className="mt-2 font-medium">Disponível para saque</Text>
+                                <Text variant="xsmall" className="mt-2 text-gray-400 font-medium">Disponível para saque</Text>
                             </Card>
                         </div>
 
